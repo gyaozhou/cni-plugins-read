@@ -126,8 +126,8 @@ func loadNetConf(bytes []byte, envArgs string) (*NetConf, string, error) {
 
 // calcGateways processes the results from the IPAM plugin and does the
 // following for each IP family:
-//    - Calculates and compiles a list of gateway addresses
-//    - Adds a default route if needed
+//   - Calculates and compiles a list of gateway addresses
+//   - Adds a default route if needed
 func calcGateways(result *current.Result, n *NetConf) (*gwInfo, *gwInfo, error) {
 
 	gwsV4 := &gwInfo{}
@@ -256,6 +256,8 @@ func bridgeByName(name string) (*netlink.Bridge, error) {
 	return br, nil
 }
 
+// zhou: README,
+
 func ensureBridge(brName string, mtu int, promiscMode, vlanFiltering bool) (*netlink.Bridge, error) {
 	br := &netlink.Bridge{
 		LinkAttrs: netlink.LinkAttrs{
@@ -333,6 +335,8 @@ func ensureVlanInterface(br *netlink.Bridge, vlanId int) (netlink.Link, error) {
 	return brGatewayVeth, nil
 }
 
+// zhou:
+
 func setupVeth(netns ns.NetNS, br *netlink.Bridge, ifName string, mtu int, hairpinMode bool, vlanID int, mac string) (*current.Interface, *current.Interface, error) {
 	contIface := &current.Interface{}
 	hostIface := &current.Interface{}
@@ -385,6 +389,8 @@ func calcGatewayIP(ipn *net.IPNet) net.IP {
 	return ip.NextIP(nid)
 }
 
+// zhou: README,
+
 func setupBridge(n *NetConf) (*netlink.Bridge, *current.Interface, error) {
 	vlanFiltering := n.Vlan != 0
 	// create bridge if necessary
@@ -405,6 +411,8 @@ func enableIPForward(family int) error {
 	}
 	return ip.EnableIP6Forward()
 }
+
+// zhou: README,
 
 func cmdAdd(args *skel.CmdArgs) error {
 	var success bool = false
@@ -702,7 +710,31 @@ func cmdDel(args *skel.CmdArgs) error {
 	return err
 }
 
+// zhou: bridge takes charge to trigger CRI invoke IPAM cni plugin host-local
+/*
+{
+  "name": "cni0",
+  "type": "bridge",
+  "mtu": 1450,
+  "ipMasq": false,
+  "isGateway": true,
+  "ipam": {
+    "type": "host-local",
+    "subnet": "10.244.0.0/24"
+  }
+}
+*/
+
 func main() {
+	// zhou:
+	/*
+		// PluginMain is the core "main" for a plugin which includes automatic error handling.
+		// The caller must also specify what CNI spec versions the plugin supports.
+		// The caller can specify an "about" string, which is printed on stderr
+		// when no CNI_COMMAND is specified. The recommended output is "CNI plugin <foo> v<version>"
+		// When an error occurs in either cmdAdd, cmdCheck, or cmdDel, PluginMain will print the error
+		// as JSON to stdout and call os.Exit(1).
+	*/
 	skel.PluginMain(cmdAdd, cmdCheck, cmdDel, version.All, bv.BuildString("bridge"))
 }
 

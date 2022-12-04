@@ -149,6 +149,8 @@ func cmdDel(args *skel.CmdArgs) error {
 	return nil
 }
 
+// zhou: The sample plugin provides an example for building your own plugin.
+
 func main() {
 	// replace TODO with your plugin name
 	skel.PluginMain(cmdAdd, cmdCheck, cmdDel, version.All, bv.BuildString("TODO"))

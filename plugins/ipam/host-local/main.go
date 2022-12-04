@@ -29,6 +29,11 @@ import (
 	"github.com/containernetworking/cni/pkg/version"
 )
 
+// zhou:
+/*
+
+ */
+
 func main() {
 	skel.PluginMain(cmdAdd, cmdCheck, cmdDel, version.All, bv.BuildString("host-local"))
 }
@@ -55,6 +60,8 @@ func cmdCheck(args *skel.CmdArgs) error {
 
 	return nil
 }
+
+// zhou: README,
 
 func cmdAdd(args *skel.CmdArgs) error {
 	ipamConf, confVersion, err := allocator.LoadIPAMConfig(args.StdinData, args.Args)
